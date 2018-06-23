@@ -1,0 +1,119 @@
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: philde
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minecraft-volumeclaim
+  namespace: philde
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+
+---
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: minecraft-config
+  namespace: philde
+data:
+  server.properties: |
+    generator-settings=
+    allow-nether=true
+    level-name=sunburn-islands
+    enable-query=false
+    allow-flight=false
+    server-port=25565
+    level-type=DEFAULT
+    enable-rcon=false
+    force-gamemode=false
+    level-seed=
+    server-ip=
+    max-build-height=256
+    spawn-npcs=true
+    white-list=false
+    spawn-animals=true
+    texture-pack=
+    snooper-enabled=true
+    hardcore=false
+    online-mode=false
+    pvp=true
+    difficulty=2
+    enable-command-block=false
+    gamemode=0
+    max-players=4
+    spawn-monsters=true
+    view-distance=10
+    generate-structures=true
+    spawn-protection=16
+    motd=Super Hostile
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minecraft
+  namespace: philde
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minecraft
+  template:
+    metadata:
+      labels:
+        app: minecraft
+    spec:
+      initContainers:
+      - name: init-config
+        image: k8s.gcr.io/busybox
+        imagePullPolicy: Always
+        command: ["/bin/sh", "-c", "cp /etc/config/server.properties /etc/data/"]
+        volumeMounts:
+        - name: minecraft-config
+          mountPath: /etc/config
+        - name: minecraft-data
+          mountPath: /etc/data
+      containers:
+      - name: minecraft
+        image: gcr.io/flowing-digit-843/minecraft:1.5.2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 25565
+        volumeMounts:
+        - mountPath: /data
+          name: minecraft-data
+      volumes:
+      - name: minecraft-data
+        persistentVolumeClaim:
+          claimName: minecraft-volumeclaim
+      - name: minecraft-config
+        configMap:
+          name: minecraft-config
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: minecraft
+  namespace: philde
+spec:
+  selector:
+    app: minecraft
+  ports:
+  - protocol: TCP
+    port: 25565
+    targetPort: 25565

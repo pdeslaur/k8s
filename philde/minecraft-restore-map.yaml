@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minecraft-download-map
+  namespace: philde
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      containers:
+      - name: google-cloud-sdk
+        image: google/cloud-sdk:alpine
+        command: [ "/bin/bash", "-c", "gsutil cp gs://minecraft-backups.deslauriers.io/sunburn-islands.tar.gz - | tar zx -C /tmp/data/" ]
+        volumeMounts:
+        - name: minecraft-data
+          mountPath: /tmp/data
+      volumes:
+        - name: minecraft-data
+          persistentVolumeClaim:
+            claimName: minecraft-volumeclaim
+      restartPolicy: Never
