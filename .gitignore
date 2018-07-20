@@ -1,5 +1,8 @@
 
-# Created by https://www.gitignore.io/api/linux,macos,windows
+# Created by https://www.gitignore.io/api/linux,macos,windows,git
+
+### Git ###
+*.orig
 
 ### Linux ###
 *~
@@ -17,7 +20,8 @@
 .nfs*
 
 ### macOS ###
-*.DS_Store
+# General
+.DS_Store
 .AppleDouble
 .LSOverride
 
@@ -49,8 +53,11 @@ Thumbs.db
 ehthumbs.db
 ehthumbs_vista.db
 
+# Dump file
+*.stackdump
+
 # Folder config file
-Desktop.ini
+[Dd]esktop.ini
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
@@ -58,6 +65,7 @@ $RECYCLE.BIN/
 # Windows Installer files
 *.cab
 *.msi
+*.msix
 *.msm
 *.msp
 
@@ -65,4 +73,4 @@ $RECYCLE.BIN/
 *.lnk
 
 
-# End of https://www.gitignore.io/api/linux,macos,windows
+# End of https://www.gitignore.io/api/linux,macos,windows,git
