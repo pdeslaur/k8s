@@ -111,9 +111,21 @@ metadata:
   name: minecraft
   namespace: philde
 spec:
+  type: ClusterIP
   selector:
     app: minecraft
   ports:
   - protocol: TCP
     port: 25565
     targetPort: 25565
+
+---
+
+apiVersion: "k8s.deslauriers.io/v1beta1"
+kind: PortAddressTranslation
+metadata:
+  name: minecraft-pat
+  namespace: philde
+spec:
+  service: minecraft
+  port: 25565
